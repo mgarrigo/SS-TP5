@@ -17,8 +17,6 @@ public class GranularMaterialForce implements ForceCalculator {
 	@Override
 	public Vector calculateForce(Particle p, Collection<Particle> particles) {
 
-		// Gravity Force
-
 		Vector FnSum = new Vector();
 		Vector FtSum = new Vector();
 
