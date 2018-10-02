@@ -34,8 +34,8 @@ public class Vector {
         return new Vector(x * c, y * c);
     }
 
-    public Vector cross(Vector v) {
-        return new Vector(x * v.x, y * v.y);
+    public Double dot(Vector v) {
+        return x * v.x + y * v.y;
     }
 
     public Double distance (Vector v) {

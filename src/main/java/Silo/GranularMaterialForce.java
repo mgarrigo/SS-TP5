@@ -11,7 +11,9 @@ import java.util.Collection;
  */
 public class GranularMaterialForce implements ForceCalculator {
 
-	public static double gravity = 9.80665; // m/s^2
+	private static double gravity = 9.80665; // m/s^2
+	private static double Kn = 1E5; // 10^5 N/m
+	private static double Kt = 2*Kn;
 
 	@Override
 	public Vector calculateForce(Particle p, Collection<Particle> particles) {
@@ -24,11 +26,23 @@ public class GranularMaterialForce implements ForceCalculator {
 		Vector FtSum = new Vector();
 
 		for (Particle particle: particles) {
+
+			Vector normalVersor = particle.getPosition().subtract(p.getPosition()).normalize();
+			Vector tangentialVersor = new Vector(-normalVersor.getY(), normalVersor.getX());
+
 			// Add normal force to summation
-			//Vector Fn = // -kn * ξ
-			//Fn.add()
+			double xi = p.getRadius() + particle.getRadius() - p.getPosition().distance(particle.getPosition());
+			Vector Fn = normalVersor.dot(-Kn * xi); // -kn * ξ (versor normal)
+
+			FnSum.add(Fn);
 
 			// Add tangential force to summation
+
+			//TODO: esto no se si va asi, o al reves
+			Vector rrel = p.getVelocity().subtract(particle.getVelocity());
+			Vector Ft = tangentialVersor.dot( -Kt * xi * rrel.dot(tangentialVersor)); // -kt * ξ * [rrel x tversor] (versor tangencial)
+
+			FtSum.add(Ft);
 		}
 
 		return Fg.add(FnSum).add(FtSum);

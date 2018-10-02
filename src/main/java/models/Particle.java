@@ -8,22 +8,24 @@ public class Particle {
     private Vector velocity;
     private Vector acceleration;
     private Double mass;
+    private Double radius;
 
-    public Particle(Integer id, Vector position, Vector velocity, Vector acceleration, Double mass) {
-        this(id.toString(),position,velocity,acceleration,mass);
+    public Particle(Integer id, Vector position, Vector velocity, Vector acceleration, Double mass, Double radius) {
+        this(id.toString(),position,velocity,acceleration,mass, radius);
     }
 
-    public Particle(String id, Vector position, Vector velocity, Vector acceleration, Double mass) {
+    public Particle(String id, Vector position, Vector velocity, Vector acceleration, Double mass, Double radius) {
         this.id =id;
         this.velocity = velocity;
         this.position = position;
         this.acceleration = acceleration;
         this.mass = mass;
+        this.radius = radius;
     }
 
 
     public Particle getCopyWithPosition(Vector newPosition) {
-        return new Particle(id, newPosition, velocity, acceleration, mass);
+        return new Particle(id, newPosition, velocity, acceleration, mass, radius);
     }
 
     public Vector getPosition() {
@@ -35,7 +37,7 @@ public class Particle {
     }
 
     public Particle getCopyWithVelocity(Vector newVelocity) {
-        return new Particle(id, position, newVelocity, acceleration, mass);
+        return new Particle(id, position, newVelocity, acceleration, mass, radius);
     }
 
     public Vector getAcceleration() {
@@ -43,12 +45,16 @@ public class Particle {
     }
 
     public Particle getCopyWithAcceleration(Vector newAcceleration) {
-        return new Particle(id, position, velocity, newAcceleration, mass);
+        return new Particle(id, position, velocity, newAcceleration, mass, radius);
     }
 
     public Double getMass() {
         return mass;
     }
+
+    public Double getRadius() {
+    	return this.radius;
+	}
 
     public String getID() {
         return id;
