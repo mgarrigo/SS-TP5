@@ -1,4 +1,4 @@
-package CalculationMethods.Implementations;
+package CalculationMethods.StepCalculators;
 
 import CalculationMethods.ForceCalculator;
 import CalculationMethods.StepCalculator;

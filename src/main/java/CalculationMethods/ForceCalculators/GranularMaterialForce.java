@@ -1,4 +1,4 @@
-package Silo;
+package CalculationMethods.ForceCalculators;
 
 import CalculationMethods.ForceCalculator;
 import models.Particle;
@@ -11,7 +11,6 @@ import java.util.Collection;
  */
 public class GranularMaterialForce implements ForceCalculator {
 
-	private static double gravity = 9.80665; // m/s^2
 	private static double Kn = 1E5; // 10^5 N/m
 	private static double Kt = 2*Kn;
 
@@ -19,8 +18,6 @@ public class GranularMaterialForce implements ForceCalculator {
 	public Vector calculateForce(Particle p, Collection<Particle> particles) {
 
 		// Gravity Force
-
-		Vector Fg = new Vector(0.0, -gravity).dot(p.getMass());
 
 		Vector FnSum = new Vector();
 		Vector FtSum = new Vector();
@@ -46,7 +43,7 @@ public class GranularMaterialForce implements ForceCalculator {
 			FtSum.add(Ft);
 		}
 
-		return Fg.add(FnSum).add(FtSum);
+		return FnSum.add(FtSum);
 	}
 
 }
