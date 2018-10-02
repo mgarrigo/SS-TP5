@@ -3,9 +3,9 @@ package CalculationMethods.Implementations;
 import CalculationMethods.ForceCalculator;
 import CalculationMethods.StepCalculator;
 import models.Particle;
+import models.Vector;
 
 import java.util.List;
-import java.util.Vector;
 import java.util.stream.Collectors;
 
 public class BeemanCalculator implements StepCalculator {
@@ -41,10 +41,10 @@ public class BeemanCalculator implements StepCalculator {
             Vector nextPos = p.getPosition()
                     .add(p.getVelocity().dot(deltaT))
                     .add(currAcc.dot(deltaT * deltaT * (2.0 / 3.0)))
-                    .substract(previousParticleState.getAcceleration().dot(1.0 / 6.0 * deltaT * deltaT));
+                    .subtract(previousParticleState.getAcceleration().dot(1.0 / 6.0 * deltaT * deltaT));
             Vector predictedVel = p.getVelocity()
                     .add(currAcc.dot(3.0 / 2.0 * deltaT))
-                    .substract(previousParticleState.getAcceleration().dot(1.0 / 2.0 * deltaT));
+                    .subtract(previousParticleState.getAcceleration().dot(1.0 / 2.0 * deltaT));
 
             return p.getCopyWithAcceleration(currAcc).getCopyWithVelocity(predictedVel).getCopyWithPosition(nextPos);
         }).collect(Collectors.toList());
@@ -60,7 +60,7 @@ public class BeemanCalculator implements StepCalculator {
             Vector correctedVelocity = p.getVelocity()
                     .add(predictedAcc.dot(1.0 / 3.0 * deltaT))
                     .add(currAcc.dot(5.0 / 6.0 * deltaT))
-                    .substract(prevAcc.dot(1.0 / 6.0 * deltaT));
+                    .subtract(prevAcc.dot(1.0 / 6.0 * deltaT));
 
             return predictedParticleState.getCopyWithVelocity(correctedVelocity).getCopyWithAcceleration(predictedAcc);
         }).collect(Collectors.toList());

@@ -25,6 +25,7 @@ public class GranularMaterialForce implements ForceCalculator {
 		Vector FnSum = new Vector();
 		Vector FtSum = new Vector();
 
+		//TODO: Tome N.2 y T.3 porque no tengo idea que es el gama. Hay que cambiarlo antes de entregar
 		for (Particle particle: particles) {
 
 			Vector normalVersor = particle.getPosition().subtract(p.getPosition()).normalize();

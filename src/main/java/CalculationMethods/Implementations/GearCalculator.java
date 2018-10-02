@@ -90,7 +90,7 @@ public class GearCalculator implements StepCalculator {
             Vector realAcc = forceCalculator.calculateAcceleration(p, predictedParticles);
             Vector predictedAcc = p.getAcceleration();
 
-            Vector deltaAcc = realAcc.substract(predictedAcc);
+            Vector deltaAcc = realAcc.subtract(predictedAcc);
             Vector deltaR2 = deltaAcc.dot(deltaT * deltaT / 2.0);
 
 
