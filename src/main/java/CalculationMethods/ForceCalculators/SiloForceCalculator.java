@@ -10,7 +10,7 @@ import java.util.List;
 
 public class SiloForceCalculator implements ForceCalculator {
     private List<Wall> walls;
-    private static double Kn = 1.16675E2; // 10^5 N/m
+    private static double Kn = 1E5; // 10^5 N/m
     private static double Kt = 2*Kn;
 
     public SiloForceCalculator(List<Wall> walls) {
@@ -51,7 +51,6 @@ public class SiloForceCalculator implements ForceCalculator {
 
             FtSum = FtSum.add(Ft);
         }
-        System.out.println(FnSum.add(FtSum));
         return FnSum.add(FtSum);
     }
 }

@@ -31,9 +31,9 @@ public class Main {
 
 		Double mass = 0.01; // kg
 
-		Double timeLimit = 1.0; // s
-		Double timeStep = 0.01; // s
-		Integer totalAnimationFrames = 100;
+		Double timeLimit = 10.0; // s
+		Double timeStep = 1E-4; // s
+		Integer totalAnimationFrames = 1000;
 
 		Integer maxParticles = 200;
 
@@ -45,7 +45,7 @@ public class Main {
 		particles.add(new Particle(2, new Vector(-0.5, 1.0), new Vector(0.0, 0.0), new Vector(0.0, 1.0), 0.01, 0.02));
 
 		List<Wall> walls = new LinkedList<>();
-		walls.add(new Wall(new Vector(-2.0, 0.5), new Vector(2.0, 0.5)));
+		walls.add(new Wall(new Vector(-2.0, 0.0), new Vector(2.0, 0.0)));
 
 		// TODO: El stepCalculator necesita que le pasemos un set de particulas. Cuando no existe el mismo hasta el momento.
 		// TODO: Los StepCalculator solo toman un FoceCalculator, no varios. Por lo tanto no podemos agregarle el Gravity y Granular.
