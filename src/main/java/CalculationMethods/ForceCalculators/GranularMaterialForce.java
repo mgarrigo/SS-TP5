@@ -22,23 +22,26 @@ public class GranularMaterialForce implements ForceCalculator {
 
 		//TODO: Tome N.2 y T.3 porque no tengo idea que es el gama. Hay que cambiarlo antes de entregar
 		for (Particle particle: particles) {
+            if (!p.equals(particle)) {
+                Vector normalVersor = particle.getPosition().subtract(p.getPosition()).normalize();
+                Vector tangentialVersor = new Vector(-normalVersor.getY(), normalVersor.getX());
 
-			Vector normalVersor = particle.getPosition().subtract(p.getPosition()).normalize();
-			Vector tangentialVersor = new Vector(-normalVersor.getY(), normalVersor.getX());
+                // Add normal force to summation
+                double xi = p.getRadius() + particle.getRadius() - p.getPosition().distance(particle.getPosition());
+                if (xi < 0.0) continue; // particles are not colliding
 
-			// Add normal force to summation
-			double xi = p.getRadius() + particle.getRadius() - p.getPosition().distance(particle.getPosition());
-			Vector Fn = normalVersor.dot(-Kn * xi); // -kn * ξ (versor normal)
+                Vector Fn = normalVersor.dot(-Kn * xi); // -kn * ξ (versor normal)
 
-			FnSum.add(Fn);
+                FnSum = FnSum.add(Fn);
 
-			// Add tangential force to summation
+                // Add tangential force to summation
 
-			//TODO: esto no se si va asi, o al reves
-			Vector rrel = p.getVelocity().subtract(particle.getVelocity());
-			Vector Ft = tangentialVersor.dot( -Kt * xi * rrel.dot(tangentialVersor)); // -kt * ξ * [rrel x tversor] (versor tangencial)
+                //TODO: esto no se si va asi, o al reves
+                Vector rrel = p.getVelocity().subtract(particle.getVelocity());
+                Vector Ft = tangentialVersor.dot(-Kt * xi * rrel.dot(tangentialVersor)); // -kt * ξ * [rrel x tversor] (versor tangencial)
 
-			FtSum.add(Ft);
+                FtSum = FtSum.add(Ft);
+            }
 		}
 
 		return FnSum.add(FtSum);
