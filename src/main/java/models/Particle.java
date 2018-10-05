@@ -60,6 +60,10 @@ public class Particle {
         return id;
     }
 
+    public Boolean isCollisioningWith(Particle particle) {
+        return getPosition().distance(particle.getPosition()) < getRadius() + particle.getRadius();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
