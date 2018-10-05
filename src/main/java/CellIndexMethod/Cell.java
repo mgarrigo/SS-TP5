@@ -1,3 +1,5 @@
+package CellIndexMethod;
+
 import models.Particle;
 
 import java.util.LinkedList;

@@ -1,5 +1,8 @@
+package CellIndexMethod;
+
 import models.Particle;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -13,10 +16,10 @@ public class CellGrid {
 	private Integer rows;
 	private Integer cols;
 
-	public CellGrid(Double width, Double height, Double cellSize) {
+	public CellGrid(Double width, Double height, Double cellSize) throws IllegalArgumentException {
 
 		if (width / cellSize % 1 != 0 || height / cellSize % 1 != 0) {
-			throw new IllegalArgumentException("Width or Height aren't multiple of cellSize");
+			throw new IllegalArgumentException("Width or Height not multiple of cellSize");
 		}
 
 		this.width = width;
@@ -31,10 +34,22 @@ public class CellGrid {
 	private void generateGrid() {
 		this.cells = new Cell[rows][cols];
 		for (int row = 0; row < rows; row++) {
-			for (int col = 0; col < cols; cols++) {
+			for (int col = 0; col < cols; col++) {
 				cells[row][col] = new Cell();
 			}
 		}
+	}
+
+	public void clear() {
+		generateGrid();
+	}
+
+	public Double getWidth() {
+		return width;
+	}
+
+	public Double getHeight() {
+		return height;
 	}
 
 	public List<Particle> getAdjacentParticles(Particle particle) {
@@ -62,4 +77,18 @@ public class CellGrid {
 
 		cells[row][col].addParticle(particle);
 	}
+
+	// TODO: Test if this works properly, or make CellIndexMethod.Cell list a Concurrent List
+	public void addParticles(Collection<Particle> particles) {
+		particles.parallelStream().forEach(p -> addParticle(p));
+	}
+
+	public List<Particle> getFallenParticles() {
+		List<Particle> fallen = new LinkedList<>();
+		for (int col = 0; col < cols; col++) {
+			fallen.addAll(cells[rows-1][col].getParticles());
+		}
+		return fallen;
+	}
+
 }
