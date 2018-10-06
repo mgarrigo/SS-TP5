@@ -43,6 +43,11 @@ function draw() {
     drawParticles(current_frame);
 
     current_frame = (current_frame + (1 + frame_skipping)) % frames;
+
+    var fps = frameRate();
+    fill(255);
+    stroke(0);
+    text("FPS: " + fps.toFixed(2), 10, height - 10);
 }
 
 drawParticle = particle => {
