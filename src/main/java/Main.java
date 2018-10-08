@@ -9,6 +9,7 @@ import models.Particle;
 import models.Vector;
 import models.Wall;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -39,22 +40,23 @@ public class Main {
 
 
 
-		List<Particle> particles = new LinkedList<>();
-		particles.add(new Particle(0, new Vector(0.0, 1.0), new Vector(0.0, 0.0), new Vector(0.0, 1.0), 0.01, 0.02));
-		particles.add(new Particle(1, new Vector(0.5, 1.0), new Vector(0.0, 0.0), new Vector(0.0, 1.0), 0.01, 0.02));
-		particles.add(new Particle(2, new Vector(-0.5, 1.0), new Vector(0.0, 0.0), new Vector(0.0, 1.0), 0.01, 0.02));
-
-		List<Wall> walls = new LinkedList<>();
-		walls.add(new Wall(new Vector(-2.0, 1.0), new Vector(0.0, 0.0)));
-		walls.add(new Wall(new Vector(0.0, 0.0), new Vector(2.0, 1.0)));
-
-		// TODO: El stepCalculator necesita que le pasemos un set de particulas. Cuando no existe el mismo hasta el momento.
-		// TODO: Los StepCalculator solo toman un FoceCalculator, no varios. Por lo tanto no podemos agregarle el Gravity y Granular.
-		StepCalculator stepCalculator = new LeapFrogVelvetCalculator(new SiloForceCalculator(walls), timeStep);
+		List<Particle> particles = linearSpawn(-0.5,0.5,0);
+//		particles.add(new Particle(0, new Vector(0.0, 1.0), new Vector(0.0, 0.0), new Vector(0.0, 1.0), 1.01, 0.02));
+//		particles.add(new Particle(1, new Vector(0.5, 1.0), new Vector(0.0, 0.0), new Vector(0.0, 1.0), 1.01, 0.02));
+//		particles.add(new Particle(2, new Vector(-0.5, 1.0), new Vector(0.0, 0.0), new Vector(0.0, 1.0), 1.01, 0.02));
+//		particles.add(new Particle(3, new Vector(-0.3, 1.0), new Vector(0.0, 0.0), new Vector(0.0, 1.0), 1.01, 0.02));
 
 		SiloSimulator siloSimulator = new SiloSimulator(width, height, cellSize, timeLimit, timeStep,
-				totalAnimationFrames, minRadius, maxRadius, mass, maxParticles, stepCalculator, particles);
+				totalAnimationFrames, minRadius, maxRadius, mass, maxParticles, particles);
 
 		siloSimulator.call();
+	}
+	public static List<Particle> linearSpawn(Double start, Double end, Integer amount){
+		List<Particle> particles = new ArrayList<>();
+		Integer id=0;
+		for (Double i = start; i < end; i+= ((end-start)/(amount*1.0))) {
+			particles.add(new Particle(id++, new Vector(i, -0.3), new Vector(0.0, 0.0), new Vector(0.0, 1.0), 1.01, 0.02));
+		}
+		return particles;
 	}
 }

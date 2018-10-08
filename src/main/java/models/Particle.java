@@ -23,6 +23,10 @@ public class Particle {
         this.radius = radius;
     }
 
+    public Particle(String id, Vector position, Double mass, Double radius) {
+        this(id,position,new Vector(0.0,0.0),new Vector(0.0,0.0),mass,radius);
+    }
+
 
     public Particle getCopyWithPosition(Vector newPosition) {
         return new Particle(id, newPosition, velocity, acceleration, mass, radius);

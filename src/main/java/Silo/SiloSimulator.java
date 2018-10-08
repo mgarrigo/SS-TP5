@@ -1,6 +1,9 @@
 package Silo;
 
+import CalculationMethods.ForceCalculator;
+import CalculationMethods.ForceCalculators.SiloForceCalculator;
 import CalculationMethods.StepCalculator;
+import CalculationMethods.StepCalculators.LeapFrogVelvetCalculator;
 import CellIndexMethod.CellGrid;
 import helpers.AnimationBuilder;
 import helpers.FileManager;
@@ -30,13 +33,11 @@ public class SiloSimulator implements Callable {
 	private Double mass;
 	private Integer maxParticles;
 	private List<Particle> particles;
-
-	private StepCalculator stepCalculator;
-
+	private Double timeBetweenParticles = 0.1;
 
 	public SiloSimulator(Double width, Double height, Double cellSize, Double timeLimit, Double timeStep,
                          Integer totalAnimationFrames, Double minRadius, Double maxRadius, Double mass,
-                         Integer maxParticles, StepCalculator stepCalculator, List<Particle> particles) {
+                         Integer maxParticles, List<Particle> particles) {
 		this.width = width;
 		this.height = height;
 		this.cellSize = cellSize;
@@ -47,8 +48,25 @@ public class SiloSimulator implements Callable {
 		this.maxRadius = maxRadius;
 		this.mass = mass;
 		this.maxParticles = maxParticles;
-		this.stepCalculator = stepCalculator;
 		this.particles = particles;
+	}
+
+	private List<Wall> getSiloWalls(){
+		Double siloScale = 1.0;
+		Double siloOpening = 0.02;
+		Double siloWidth = 0.6;
+		Double siloWallHeight = 0.5;
+		Double openingHeight = 0.15;
+		List<Wall> walls = new ArrayList<>();
+		//Left Wall
+		walls.add(new Wall(new Vector(-siloScale*siloWidth, siloWallHeight*siloScale), new Vector(-siloScale*siloWidth, -siloWallHeight*siloScale)));
+		//Right Wall
+		walls.add(new Wall(new Vector(siloScale*siloWidth, -siloWallHeight*siloScale), new Vector(siloScale*siloWidth, siloWallHeight*siloScale)));
+		//Right ramp
+		walls.add(new Wall(new Vector(siloOpening*siloScale*siloWidth, -(openingHeight+siloWallHeight)*siloScale),new Vector(siloScale*siloWidth, -siloWallHeight*siloScale)));
+		//Left Ramp
+		walls.add(new Wall(new Vector(-siloScale*siloWidth, -siloWallHeight*siloScale),new Vector(-siloOpening*siloScale*siloWidth, -(openingHeight+siloWallHeight)*siloScale)));
+		return walls;
 	}
 
 	@Override
@@ -58,16 +76,14 @@ public class SiloSimulator implements Callable {
 //		CellGrid cellGrid = new CellGrid(width, height + cellSize, cellSize);
 //        int id = 0;
 
-        // TODO: Generate map or walls
-        Wall w1 = new Wall(new Vector(0.5, 0.0), new Vector(1.0, 0.5));
-        Wall w2 = new Wall(new Vector(1.0, 0.5), new Vector(1.0, 1.0));
-        Wall w3 = new Wall(new Vector(-0.5, 0.0), new Vector(-1.0, 0.5));
-        Wall w4 = new Wall(new Vector(-1.0, 0.5), new Vector(-1.0, 1.0));
+		// TODO: El stepCalculator necesita que le pasemos un set de particulas. Cuando no existe el mismo hasta el momento.
+		StepCalculator stepCalculator = new LeapFrogVelvetCalculator(new SiloForceCalculator(getSiloWalls()), timeStep);
 
-        AnimationBuilder ab = new AnimationBuilder();
+		AnimationBuilder ab = new AnimationBuilder();
         FileManager fm = new FileManager();
 
         double currentTime = 0.0;
+        Double lastParticleSpawnedAt = currentTime;
         int animationCurrentFrame = 0;
 
 		while(currentTime <= timeLimit) {
@@ -78,6 +94,10 @@ public class SiloSimulator implements Callable {
 
 			particles = stepCalculator.updateParticles(particles);
 
+			if(currentTime - lastParticleSpawnedAt > timeBetweenParticles && particles.size() < maxParticles){
+				lastParticleSpawnedAt = currentTime;
+				particles.add(new Particle(particles.size()+"a",new Vector(random.nextDouble()-0.5,0.0),maxRadius,mass));
+			}
 
 //			cellGrid.addParticles(particles);
 
