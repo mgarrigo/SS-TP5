@@ -5,6 +5,8 @@ import CalculationMethods.StepCalculators.BeemanCalculator;
 import CalculationMethods.StepCalculators.LeapFrogVelvetCalculator;
 import Silo.ParticleSpawner;
 import Silo.SiloSimulator;
+import experiments.ExperimentsStatsAgregator;
+import experiments.Operation;
 import models.Particle;
 import models.Vector;
 import models.Wall;
@@ -49,7 +51,8 @@ public class Main {
 		SiloSimulator siloSimulator = new SiloSimulator(width, height, cellSize, timeLimit, timeStep,
 				totalAnimationFrames, minRadius, maxRadius, mass, maxParticles, particles);
 
-		siloSimulator.call();
+		StringBuilder sb = ExperimentsStatsAgregator.getFromHolders(siloSimulator.call()).buildStatsOutput(Operation.MEAN);
+		System.out.println(sb.toString());
 	}
 	public static List<Particle> linearSpawn(Double start, Double end, Integer amount){
 		List<Particle> particles = new ArrayList<>();
