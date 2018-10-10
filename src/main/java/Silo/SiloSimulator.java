@@ -35,6 +35,8 @@ public class SiloSimulator implements Callable {
 	private Integer maxParticles;
 	private List<Particle> particles;
 	private Double timeBetweenParticles = 0.1;
+
+	//This is the ratio of the opening in relation to the width of the silo
 	private Double operingHeight;
 
 	public SiloSimulator(Double width, Double height, Double cellSize, Double timeLimit, Double timeStep,
@@ -53,24 +55,7 @@ public class SiloSimulator implements Callable {
 		this.particles = particles;
 	}
 
-	private List<Wall> getSiloWalls(){
-		Double siloScale = 1.0;
-		Double siloOpening = 0.02;
-		Double siloWidth = 0.6;
-		Double siloWallHeight = 0.5;
-		Double openingHeight = 0.15;
-		this.operingHeight = -(openingHeight+siloWallHeight)*siloScale;
-		List<Wall> walls = new ArrayList<>();
-		//Left Wall
-		walls.add(new Wall(new Vector(-siloScale*siloWidth, siloWallHeight*siloScale), new Vector(-siloScale*siloWidth, -siloWallHeight*siloScale)));
-		//Right Wall
-		walls.add(new Wall(new Vector(siloScale*siloWidth, -siloWallHeight*siloScale), new Vector(siloScale*siloWidth, siloWallHeight*siloScale)));
-		//Right ramp
-		walls.add(new Wall(new Vector(siloOpening*siloScale*siloWidth, -(openingHeight+siloWallHeight)*siloScale),new Vector(siloScale*siloWidth, -siloWallHeight*siloScale)));
-		//Left Ramp
-		walls.add(new Wall(new Vector(-siloScale*siloWidth, -siloWallHeight*siloScale),new Vector(-siloOpening*siloScale*siloWidth, -(openingHeight+siloWallHeight)*siloScale)));
-		return walls;
-	}
+
 
 	@Override
 	public ExperimentStatsHolder<SiloMetrics> call() throws Exception {
@@ -81,7 +66,7 @@ public class SiloSimulator implements Callable {
 
 		ExperimentStatsHolder<SiloMetrics> holder = new ExperimentStatsHolder<>();
 		// TODO: El stepCalculator necesita que le pasemos un set de particulas. Cuando no existe el mismo hasta el momento.
-		StepCalculator stepCalculator = new LeapFrogVelvetCalculator(new SiloForceCalculator(getSiloWalls()), timeStep);
+		StepCalculator stepCalculator = new LeapFrogVelvetCalculator(new SiloForceCalculator(getSiloWalls(0.15)), timeStep);
 
 		AnimationBuilder ab = new AnimationBuilder();
         FileManager fm = new FileManager();
@@ -147,5 +132,23 @@ public class SiloSimulator implements Callable {
 		lastParticles = escapedParticles.intValue();
 		lastMeasuredTime = currentTime;
 		return flow;
+	}
+
+	private List<Wall> getSiloWalls(Double openingRatio){
+		Double siloScale = 1.0;
+		Double siloWidth = 0.6;
+		Double siloWallHeight = 0.5;
+		Double openingHeight = 0.15;
+		this.operingHeight = -(openingHeight+siloWallHeight)*siloScale;
+		List<Wall> walls = new ArrayList<>();
+		//Left Wall
+		walls.add(new Wall(new Vector(-siloScale*siloWidth, siloWallHeight*siloScale), new Vector(-siloScale*siloWidth, -siloWallHeight*siloScale)));
+		//Right Wall
+		walls.add(new Wall(new Vector(siloScale*siloWidth, -siloWallHeight*siloScale), new Vector(siloScale*siloWidth, siloWallHeight*siloScale)));
+		//Right ramp
+		walls.add(new Wall(new Vector(openingRatio*siloScale*siloWidth, -(openingHeight+siloWallHeight)*siloScale),new Vector(siloScale*siloWidth, -siloWallHeight*siloScale)));
+		//Left Ramp
+		walls.add(new Wall(new Vector(-siloScale*siloWidth, -siloWallHeight*siloScale),new Vector(-openingRatio*siloScale*siloWidth, -(openingHeight+siloWallHeight)*siloScale)));
+		return walls;
 	}
 }
