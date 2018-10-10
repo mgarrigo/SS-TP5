@@ -31,7 +31,7 @@ public class Main {
 		Double cellSize = 1.0; // m
 
 		Double minRadius = 0.01; // m
-		Double maxRadius = 0.015; // m
+		Double maxRadius = 0.055; // m
 
 		Double mass = 0.01; // kg
 
@@ -50,7 +50,7 @@ public class Main {
 //		particles.add(new Particle(3, new Vector(-0.3, 1.0), new Vector(0.0, 0.0), new Vector(0.0, 1.0), 1.01, 0.02));
 
 		SiloSimulator siloSimulator = new SiloSimulator(width, height, cellSize, timeLimit, timeStep,
-				totalAnimationFrames, minRadius, maxRadius, mass, maxParticles, particles);
+				totalAnimationFrames, minRadius, maxRadius, mass, maxParticles,0.13);
 
 		StringBuilder sb = ExperimentsStatsAgregator.getFromHolders(siloSimulator.call()).buildStatsOutput(Operation.MEAN);
 		System.out.println(sb.toString());
