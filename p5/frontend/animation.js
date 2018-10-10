@@ -12,6 +12,7 @@ function preload() {
 }
 
 function setup() {
+    frameRate(60)
     frames = parseInt(file.length);
     createCanvas(canvas_size, canvas_size);
 
@@ -51,7 +52,6 @@ function draw() {
 }
 
 drawParticle = particle => {
-    // console.log(particle)
     var c = color(255, 0, 0);
     fill(c);
     ellipse(world2canvas(particle.x), world2canvas(particle.y), 0.02 * canvas_size / world_size);

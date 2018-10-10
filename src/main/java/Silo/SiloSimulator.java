@@ -55,7 +55,7 @@ public class SiloSimulator implements Callable {
 
 	private List<Wall> getSiloWalls(){
 		Double siloScale = 1.0;
-		Double siloOpening = 0.02;
+		Double siloOpening = 0.03;
 		Double siloWidth = 0.6;
 		Double siloWallHeight = 0.5;
 		Double openingHeight = 0.15;
@@ -69,6 +69,8 @@ public class SiloSimulator implements Callable {
 		walls.add(new Wall(new Vector(siloOpening*siloScale*siloWidth, -(openingHeight+siloWallHeight)*siloScale),new Vector(siloScale*siloWidth, -siloWallHeight*siloScale)));
 		//Left Ramp
 		walls.add(new Wall(new Vector(-siloScale*siloWidth, -siloWallHeight*siloScale),new Vector(-siloOpening*siloScale*siloWidth, -(openingHeight+siloWallHeight)*siloScale)));
+		// Horizontal floor
+//		walls.add(new Wall(new Vector(-siloScale*siloWidth, -siloWallHeight*siloScale), new Vector(siloScale*siloWidth, -siloWallHeight*siloScale)));
 		return walls;
 	}
 

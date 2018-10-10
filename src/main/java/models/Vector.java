@@ -1,5 +1,7 @@
 package models;
 
+import java.util.Objects;
+
 public class Vector {
     private Double x;
     private Double y;
@@ -49,6 +51,36 @@ public class Vector {
     public Vector normalize() {
         Double norm = norm();
         return this.dot(1.0 / norm);
+    }
+
+//    Get angle from X axis
+    public Double getAngle() {
+        Double angle = Math.atan2(getY(), getX());
+        if (angle < 0) return angle + 2 * Math.PI;
+        return angle;
+
+    }
+
+    public Vector projectionOnVector(Vector v) {
+        Double angle1 = v.getAngle();
+        angle1.equals(null);
+        Double angle2 = this.getAngle();
+        Double relAngle = Math.abs(angle1 - angle2);
+        return v.normalize().dot(Math.cos(relAngle) * this.norm());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        Double IMPRECISION = 1E-15;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Vector vector = (Vector) o;
+        return Math.abs(x - vector.x) < IMPRECISION && Math.abs(y - vector.y) < IMPRECISION;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y);
     }
 
     @Override

@@ -22,6 +22,7 @@ import java.util.Random;
 public class Main {
 
 	public static Random random = new Random();
+	private static Long initialTime = System.currentTimeMillis();
 
 	public static void main(String[] args) throws Exception {
 
@@ -38,7 +39,7 @@ public class Main {
 		Double timeStep = 1E-4; // s
 		Integer totalAnimationFrames = timeLimit.intValue() * 60;
 
-		Integer maxParticles = 200;
+		Integer maxParticles = 50;
 
 
 
@@ -53,12 +54,14 @@ public class Main {
 
 		StringBuilder sb = ExperimentsStatsAgregator.getFromHolders(siloSimulator.call()).buildStatsOutput(Operation.MEAN);
 		System.out.println(sb.toString());
+
+        System.out.println((System.currentTimeMillis() - initialTime) + " ms");
 	}
 	public static List<Particle> linearSpawn(Double start, Double end, Integer amount){
 		List<Particle> particles = new ArrayList<>();
 		Integer id=0;
 		for (Double i = start; i < end; i+= ((end-start)/(amount*1.0))) {
-			particles.add(new Particle(id++, new Vector(i, -0.3), new Vector(0.0, 0.0), new Vector(0.0, 1.0), 1.01, 0.02));
+			particles.add(new Particle(id++, new Vector(i, -0.3), new Vector(0.0, 0.0), new Vector(0.0, 1.0), 0.01, 0.02));
 		}
 		return particles;
 	}
