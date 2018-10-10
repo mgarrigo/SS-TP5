@@ -149,6 +149,8 @@ public class SiloSimulator implements Callable {
 		walls.add(new Wall(new Vector(openingRatio*siloScale*siloWidth, -(openingHeight+siloWallHeight)*siloScale),new Vector(siloScale*siloWidth, -siloWallHeight*siloScale)));
 		//Left Ramp
 		walls.add(new Wall(new Vector(-siloScale*siloWidth, -siloWallHeight*siloScale),new Vector(-openingRatio*siloScale*siloWidth, -(openingHeight+siloWallHeight)*siloScale)));
-		return walls;
+        // Horizontal floor
+//		walls.add(new Wall(new Vector(-siloScale*siloWidth, -siloWallHeight*siloScale), new Vector(siloScale*siloWidth, -siloWallHeight*siloScale)));
+        return walls;
 	}
 }
