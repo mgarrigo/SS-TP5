@@ -9,6 +9,14 @@ public class Wall {
         this.end = end;
     }
 
+    public Vector getStart() {
+        return start;
+    }
+
+    public Vector getEnd() {
+        return end;
+    }
+
     public Double getLength() {
         return start.distance(end);
     }

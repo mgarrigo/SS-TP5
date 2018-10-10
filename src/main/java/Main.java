@@ -1,18 +1,10 @@
-import CalculationMethods.ForceCalculators.GravityCalculator;
-import CalculationMethods.ForceCalculators.SiloForceCalculator;
-import CalculationMethods.StepCalculator;
-import CalculationMethods.StepCalculators.BeemanCalculator;
-import CalculationMethods.StepCalculators.LeapFrogVelvetCalculator;
-import Silo.ParticleSpawner;
 import Silo.SiloSimulator;
 import experiments.ExperimentsStatsAgregator;
 import experiments.Operation;
 import models.Particle;
 import models.Vector;
-import models.Wall;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
@@ -26,42 +18,45 @@ public class Main {
 
 	public static void main(String[] args) throws Exception {
 
-		Double width = 10.0; // m
-		Double height = 50.0; // m
-		Double cellSize = 1.0; // m
+		Double width = 1.0; // m
+		Double height = 2.0; // m
+		Double cellSize = 0.5; // m
 
 		Double minRadius = 0.01; // m
 		Double maxRadius = 0.055; // m
 
 		Double mass = 0.01; // kg
 
-		Double timeLimit = 10.0; // s
+		Double timeLimit = 4.0; // s
 		Double timeStep = 1E-4; // s
 		Integer totalAnimationFrames = timeLimit.intValue() * 60;
 
-		Integer maxParticles = 50;
+		Integer maxParticles = 20;
 
 
 
-		List<Particle> particles = linearSpawn(-0.5,0.5,0);
-//		particles.add(new Particle(0, new Vector(0.0, 1.0), new Vector(0.0, 0.0), new Vector(0.0, 1.0), 1.01, 0.02));
+		List<Particle> particles = linearSpawn(0.1,0.9, maxParticles);
+//		particles.add(new Particle(0, new Vector(0.0, 0.0), new Vector(0.80, 2.0), new Vector(0.0, 1.0), 1.01, 0.02));
 //		particles.add(new Particle(1, new Vector(0.5, 1.0), new Vector(0.0, 0.0), new Vector(0.0, 1.0), 1.01, 0.02));
 //		particles.add(new Particle(2, new Vector(-0.5, 1.0), new Vector(0.0, 0.0), new Vector(0.0, 1.0), 1.01, 0.02));
 //		particles.add(new Particle(3, new Vector(-0.3, 1.0), new Vector(0.0, 0.0), new Vector(0.0, 1.0), 1.01, 0.02));
 
 		SiloSimulator siloSimulator = new SiloSimulator(width, height, cellSize, timeLimit, timeStep,
-				totalAnimationFrames, minRadius, maxRadius, mass, maxParticles,0.13);
+				totalAnimationFrames, minRadius, maxRadius, mass, maxParticles,0.01, particles);
 
 		StringBuilder sb = ExperimentsStatsAgregator.getFromHolders(siloSimulator.call()).buildStatsOutput(Operation.MEAN);
 		System.out.println(sb.toString());
 
-        System.out.println((System.currentTimeMillis() - initialTime) + " ms");
+        System.out.println(((System.currentTimeMillis() - initialTime)/1000.0) + " s");
 	}
 	public static List<Particle> linearSpawn(Double start, Double end, Integer amount){
 		List<Particle> particles = new ArrayList<>();
 		Integer id=0;
 		for (Double i = start; i < end; i+= ((end-start)/(amount*1.0))) {
-			particles.add(new Particle(id++, new Vector(i, -0.3), new Vector(0.0, 0.0), new Vector(0.0, 1.0), 0.01, 0.02));
+			particles.add(new Particle(id++, new Vector(i, .50), new Vector(0.0, 0.0), new Vector(0.0, 1.0), 0.01, 0.02));
+			particles.add(new Particle(id++, new Vector(i, .7), new Vector(0.0, 0.0), new Vector(0.0, 1.0), 0.01, 0.02));
+			particles.add(new Particle(id++, new Vector(i, .8), new Vector(0.0, 0.0), new Vector(0.0, 1.0), 0.01, 0.02));
+			particles.add(new Particle(id++, new Vector(i, .9), new Vector(0.0, 0.0), new Vector(0.0, 1.0), 0.01, 0.02));
 		}
 		return particles;
 	}

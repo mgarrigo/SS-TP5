@@ -2,6 +2,7 @@ package CalculationMethods.StepCalculators;
 
 import CalculationMethods.ForceCalculator;
 import CalculationMethods.StepCalculator;
+import CellIndexMethod.CellGrid;
 import models.Particle;
 import models.Vector;
 

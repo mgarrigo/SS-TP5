@@ -12,7 +12,8 @@ import java.util.Collection;
 public class GranularMaterialForce implements ForceCalculator {
 
 	private static double Kn = 1E5; // 10^5 N/m
-	private static double Kt = 2*Kn;
+    private static double Kt = 2*Kn;
+    private static double gamma = 100.0;
 
 	@Override
 	public Vector calculateForce(Particle p, Collection<Particle> particles) {
@@ -31,6 +32,7 @@ public class GranularMaterialForce implements ForceCalculator {
                 if (xi < 0.0) continue; // particles are not colliding
 
                 Vector Fn = normalVersor.dot(-Kn * xi); // -kn * ξ (versor normal)
+
 
                 FnSum = FnSum.add(Fn);
 

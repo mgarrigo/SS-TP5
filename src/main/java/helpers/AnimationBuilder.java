@@ -1,14 +1,23 @@
 package helpers;
 
 import models.Particle;
+import models.Wall;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 
 public class AnimationBuilder {
 
     private int precision = 8;
     private StringBuilder sb = new StringBuilder();
+
+    public AnimationBuilder(List<Wall> walls) {
+        for (Wall w: walls) {
+            sb.append(w.getStart().getX() + " " + w.getStart().getY() + " " + w.getEnd().getX() + " " + w.getEnd().getY() + " ");
+        }
+        sb.append("\n");
+    }
 
     public void addParticlesforNextFrame(Collection<Particle> particles) {
         for (Particle p : particles) {

@@ -42,7 +42,7 @@ public class SiloSimulator implements Callable {
 
 	public SiloSimulator(Double width, Double height, Double cellSize, Double timeLimit, Double timeStep,
                          Integer totalAnimationFrames, Double minRadius, Double maxRadius, Double mass,
-                         Integer maxParticles, Double openingRatio) {
+                         Integer maxParticles, Double openingRatio, List <Particle> particles) {
 		this.width = width;
 		this.height = height;
 		this.cellSize = cellSize;
@@ -54,7 +54,7 @@ public class SiloSimulator implements Callable {
 		this.mass = mass;
 		this.maxParticles = maxParticles;
 		this.openingRatio = openingRatio;
-		this.particles = getParticlesToFillSilo(50);
+		this.particles =  particles;//getParticlesToFillSilo(maxParticles);
 	}
 
 
@@ -64,13 +64,13 @@ public class SiloSimulator implements Callable {
 
 //		List<Particle> particles = new LinkedList<>();
 //		CellGrid cellGrid = new CellGrid(width, height + cellSize, cellSize);
-//        int id = 0;
+//		Integer id = 0;
 
 		ExperimentStatsHolder<SiloMetrics> holder = new ExperimentStatsHolder<>();
-		// TODO: El stepCalculator necesita que le pasemos un set de particulas. Cuando no existe el mismo hasta el momento.
-		StepCalculator stepCalculator = new LeapFrogVelvetCalculator(new SiloForceCalculator(getSiloWalls(openingRatio)), timeStep);
+		List<Wall> walls = getSiloWalls(openingRatio);
+		StepCalculator stepCalculator = new LeapFrogVelvetCalculator(new SiloForceCalculator(walls, width, height, cellSize), timeStep);
 
-		AnimationBuilder ab = new AnimationBuilder();
+		AnimationBuilder ab = new AnimationBuilder(walls);
         FileManager fm = new FileManager();
 
         double currentTime = 0.0;
@@ -89,26 +89,6 @@ public class SiloSimulator implements Callable {
 				holder.addDataPoint(SiloMetrics.TIME,currentTime);
                 System.out.println("Time Simulated: " + currentTime);
 			}
-//			cellGrid.addParticles(particles);
-
-			// Removes the particles outside the map.
-//			List<Particle> fallen = cellGrid.getFallenParticles();
-//			particles.removeAll(fallen);
-
-			// Generates the particles on top of the silo, if they fit.
-			// TODO: ACA LAS PARTICULAS SE TRATAN DE INSERTAR SIEMPRE HASTA LLEGAR AL MAXIMO. PREGUNTAR SI SE PUEDE HACER ASI O SE NECESITA QUE APAREZCA YA EL SILO LLENO AL EMPEZAR LA SIMULACION.
-//			while(particles.size() < maxParticles) {
-//				Double radius = random.nextDouble() * (maxRadius - minRadius) + minRadius;
-//				Particle particle = ParticleSpawner.spawnParticleOnTop(cellGrid, id, radius, mass);
-//				if (particle == null) break;
-//				System.out.println("Created Particle " + particle);
-//				particles.add(particle);
-//				id++;
-//			}
-
-//			stepCalculator.updateParticles(particles);
-
-//			cellGrid.clear();
 
 			currentTime += timeStep;
 		}
@@ -138,7 +118,7 @@ public class SiloSimulator implements Callable {
         List<Particle> particles = new ArrayList<>();
         Boolean finished = false;
         Double secondsToStabilice = 1.0;
-        StepCalculator stepCalculator = new LeapFrogVelvetCalculator(new SiloForceCalculator(getSiloWalls(openingRatio,true)), timeStep);
+        StepCalculator stepCalculator = new LeapFrogVelvetCalculator(new SiloForceCalculator(getSiloWalls(openingRatio,true), width, height, cellSize), timeStep);
 	    while (! finished || currentTime < secondsToStabilice) {
             particles = stepCalculator.updateParticles(particles);
             if(currentTime - lastParticleSpawnedAt > timeBetweenParticles){
@@ -167,22 +147,22 @@ public class SiloSimulator implements Callable {
 
 	private List<Wall> getSiloWalls(Double openingRatio, Boolean closed){
 		Double siloScale = 1.0;
-		Double siloWidth = 0.3;
-		Double siloWallHeight = 0.2;
-		Double openingHeight = 0.3;
+		Double siloWidth = width;
+		Double siloWallHeight = height;
+		Double openingHeight = 0.2;
 		this.operingHeight = -(openingHeight+siloWallHeight)*siloScale;
 		List<Wall> walls = new ArrayList<>();
 		//Left Wall
-		walls.add(new Wall(new Vector(-siloScale*siloWidth, siloWallHeight*siloScale), new Vector(-siloScale*siloWidth, -siloWallHeight*siloScale)));
+		walls.add(new Wall(new Vector(0.0, siloWallHeight*siloScale), new Vector(0.0, openingHeight* siloWallHeight*siloScale)));
 		//Right Wall
-		walls.add(new Wall(new Vector(siloScale*siloWidth, -siloWallHeight*siloScale), new Vector(siloScale*siloWidth, siloWallHeight*siloScale)));
+		walls.add(new Wall(new Vector(siloScale*siloWidth, openingHeight* siloWallHeight*siloScale), new Vector(siloScale*siloWidth, siloWallHeight*siloScale)));
 		//Right ramp
-		walls.add(new Wall(new Vector(openingRatio*siloScale*siloWidth, -(openingHeight+siloWallHeight)*siloScale),new Vector(siloScale*siloWidth, -siloWallHeight*siloScale)));
+		walls.add(new Wall(new Vector(((width+openingRatio)/2)*siloWidth, 0.2),new Vector(siloScale*siloWidth, openingHeight* siloWallHeight*siloScale)));
 		//Left Ramp
-		walls.add(new Wall(new Vector(-siloScale*siloWidth, -siloWallHeight*siloScale),new Vector(-openingRatio*siloScale*siloWidth, -(openingHeight+siloWallHeight)*siloScale)));
+		walls.add(new Wall(new Vector(0.0, openingHeight* siloWallHeight*siloScale),new Vector(((width-openingRatio)/2)*siloWidth, 0.2)));
         // Horizontal floor
         if(closed){
-            walls.add(new Wall(new Vector(-siloScale*siloWidth, -(siloWallHeight+openingHeight)*siloScale), new Vector(siloScale*siloWidth, -(siloWallHeight+openingHeight)*siloScale)));
+//            walls.add(new Wall(new Vector(0.0, 0.5 * siloWallHeight*siloScale), new Vector(siloScale*siloWidth, 0.5 * siloWallHeight*siloScale)));
         }
         return walls;
 	}

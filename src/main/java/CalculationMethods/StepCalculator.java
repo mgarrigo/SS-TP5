@@ -1,5 +1,6 @@
 package CalculationMethods;
 
+import CellIndexMethod.CellGrid;
 import models.Particle;
 
 import java.util.List;

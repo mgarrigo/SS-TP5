@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import static java.lang.System.exit;
+
 public class CellGrid {
 
 	private Cell[][] cells;
@@ -75,12 +77,13 @@ public class CellGrid {
 		int row = (int) Math.floor(particle.getPosition().getY() / cellSize);
 		int col = (int) Math.floor(particle.getPosition().getX() / cellSize);
 
-		cells[row][col].addParticle(particle);
+		if (row >= 0 && row < rows && col >= 0 && col < cols)
+			cells[row][col].addParticle(particle);
 	}
 
 	// TODO: Test if this works properly, or make CellIndexMethod.Cell list a Concurrent List
 	public void addParticles(Collection<Particle> particles) {
-		particles.parallelStream().forEach(p -> addParticle(p));
+		particles.stream().forEach(p -> addParticle(p));
 	}
 
 	public List<Particle> getFallenParticles() {
