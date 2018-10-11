@@ -22,6 +22,10 @@ public class Cell {
 		return particles;
 	}
 
+	public void clear() {
+		particles.clear();
+	}
+
 	@Override
 	public String toString() {
 		return "Cell{" +

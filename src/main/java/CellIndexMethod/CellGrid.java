@@ -43,7 +43,11 @@ public class CellGrid {
 	}
 
 	public void clear() {
-		generateGrid();
+		for (int row = 0; row < rows; row++) {
+			for (int col = 0; col < cols; col++) {
+				cells[row][col].clear();
+			}
+		}
 	}
 
 	public Double getWidth() {
@@ -60,8 +64,8 @@ public class CellGrid {
 
 		List<Particle> adjacent = new LinkedList<>();
 
-		for (int row = centerRow - 1; row < centerRow + 1; row++) {
-			for (int col = centerCol - 1; col < centerCol + 1; col++) {
+		for (int row = centerRow - 1; row <= centerRow + 1; row++) {
+			for (int col = centerCol - 1; col <= centerCol + 1; col++) {
 				if (row >= 0 && row < rows && col >= 0 && col < cols) {
 					adjacent.addAll(cells[row][col].getParticles());
 				}

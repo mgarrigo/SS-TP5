@@ -90,6 +90,8 @@ public class SiloSimulator implements Callable {
                 System.out.println("Time Simulated: " + currentTime);
 			}
 
+
+            resetParticles();
 			currentTime += timeStep;
 		}
 
@@ -97,6 +99,17 @@ public class SiloSimulator implements Callable {
 
 		return holder;
 	}
+
+	private void resetParticles() {
+        for (int i = 0; i < particles.size(); i++) {
+            Particle p = particles.get(i);
+	        if (p.getPosition().getY() < -height/10) {
+                particles.remove(i);
+                particles.add(p.getCopyWithPosition(new Vector(0.9*random.nextDouble()*width,(0.2*random.nextDouble()+0.8)*height))
+                        .getCopyWithVelocity(new Vector(0.0, 0.0)));
+            }
+        }
+    }
 
 	private Double deltaTime=1.0;
 	//If the fallen particles are removed, we need to substract the fallen from this value
@@ -117,7 +130,7 @@ public class SiloSimulator implements Callable {
         Double lastParticleSpawnedAt = 0.0;
         List<Particle> particles = new ArrayList<>();
         Boolean finished = false;
-        Double secondsToStabilice = 1.0;
+        Double secondsToStabilice = .30;
         StepCalculator stepCalculator = new LeapFrogVelvetCalculator(new SiloForceCalculator(getSiloWalls(openingRatio,true), width, height, cellSize), timeStep);
 	    while (! finished || currentTime < secondsToStabilice) {
             particles = stepCalculator.updateParticles(particles);
@@ -129,7 +142,7 @@ public class SiloSimulator implements Callable {
                         System.out.println("Spawned all particles, waiting " + secondsToStabilice + " secs");
                     } else {
                         lastParticleSpawnedAt = currentTime;
-                        particles.add(new Particle(particles.size()+"a",new Vector(0.3*(random.nextDouble()-0.5),0.0),maxRadius,mass));
+                        particles.add(new Particle(particles.size()+"a",new Vector(0.9*random.nextDouble()*width,height),maxRadius,mass));
                         System.out.println("Spawnign particle: " + (particles.size() -1));
                     }
                 }
@@ -157,9 +170,9 @@ public class SiloSimulator implements Callable {
 		//Right Wall
 		walls.add(new Wall(new Vector(siloScale*siloWidth, openingHeight* siloWallHeight*siloScale), new Vector(siloScale*siloWidth, siloWallHeight*siloScale)));
 		//Right ramp
-		walls.add(new Wall(new Vector(((width+openingRatio)/2)*siloWidth, 0.2),new Vector(siloScale*siloWidth, openingHeight* siloWallHeight*siloScale)));
+		walls.add(new Wall(new Vector(((width+openingRatio)/2)*siloScale, 0.2),new Vector(siloScale*siloWidth, openingHeight* siloWallHeight*siloScale)));
 		//Left Ramp
-		walls.add(new Wall(new Vector(0.0, openingHeight* siloWallHeight*siloScale),new Vector(((width-openingRatio)/2)*siloWidth, 0.2)));
+		walls.add(new Wall(new Vector(0.0, openingHeight* siloWallHeight*siloScale),new Vector(((width-openingRatio)/2)*siloScale, 0.2)));
         // Horizontal floor
         if(closed){
 //            walls.add(new Wall(new Vector(0.0, 0.5 * siloWallHeight*siloScale), new Vector(siloScale*siloWidth, 0.5 * siloWallHeight*siloScale)));

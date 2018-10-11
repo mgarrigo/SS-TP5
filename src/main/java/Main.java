@@ -18,31 +18,32 @@ public class Main {
 
 	public static void main(String[] args) throws Exception {
 
-		Double width = 1.0; // m
-		Double height = 2.0; // m
-		Double cellSize = 0.5; // m
+		Double width = 1.5; // m
+		Double height = 1.5; // m
+		Double cellSize = 0.25; // m
 
-		Double minRadius = 0.01; // m
-		Double maxRadius = 0.055; // m
+		Double minRadius = 0.02; // m
+		Double maxRadius = 0.02; // m
 
 		Double mass = 0.01; // kg
 
-		Double timeLimit = 4.0; // s
+		Double timeLimit = 2.0; // s
 		Double timeStep = 1E-4; // s
 		Integer totalAnimationFrames = timeLimit.intValue() * 60;
 
 		Integer maxParticles = 20;
+		Integer particlesPerLine = 20;
 
 
 
-		List<Particle> particles = linearSpawn(0.1,0.9, maxParticles);
+		List<Particle> particles = linearSpawn(0.1,width - 0.1, particlesPerLine);
 //		particles.add(new Particle(0, new Vector(0.0, 0.0), new Vector(0.80, 2.0), new Vector(0.0, 1.0), 1.01, 0.02));
 //		particles.add(new Particle(1, new Vector(0.5, 1.0), new Vector(0.0, 0.0), new Vector(0.0, 1.0), 1.01, 0.02));
 //		particles.add(new Particle(2, new Vector(-0.5, 1.0), new Vector(0.0, 0.0), new Vector(0.0, 1.0), 1.01, 0.02));
 //		particles.add(new Particle(3, new Vector(-0.3, 1.0), new Vector(0.0, 0.0), new Vector(0.0, 1.0), 1.01, 0.02));
 
 		SiloSimulator siloSimulator = new SiloSimulator(width, height, cellSize, timeLimit, timeStep,
-				totalAnimationFrames, minRadius, maxRadius, mass, maxParticles,0.01, particles);
+				totalAnimationFrames, minRadius, maxRadius, mass, maxParticles,0.1, particles);
 
 		StringBuilder sb = ExperimentsStatsAgregator.getFromHolders(siloSimulator.call()).buildStatsOutput(Operation.MEAN);
 		System.out.println(sb.toString());
@@ -53,11 +54,11 @@ public class Main {
 		List<Particle> particles = new ArrayList<>();
 		Integer id=0;
 		for (Double i = start; i < end; i+= ((end-start)/(amount*1.0))) {
-			particles.add(new Particle(id++, new Vector(i, .50), new Vector(0.0, 0.0), new Vector(0.0, 1.0), 0.01, 0.02));
-			particles.add(new Particle(id++, new Vector(i, .7), new Vector(0.0, 0.0), new Vector(0.0, 1.0), 0.01, 0.02));
-			particles.add(new Particle(id++, new Vector(i, .8), new Vector(0.0, 0.0), new Vector(0.0, 1.0), 0.01, 0.02));
-			particles.add(new Particle(id++, new Vector(i, .9), new Vector(0.0, 0.0), new Vector(0.0, 1.0), 0.01, 0.02));
+			for (Double j = 0.5; j <= 1.3; j+=0.1) {
+			particles.add(new Particle(id++, new Vector(i, j), new Vector(0.0, 0.0), new Vector(0.0, 1.0), 0.01, 0.02));
+			}
 		}
+		System.out.println(particles.size() + " partículas\n");
 		return particles;
 	}
 }
