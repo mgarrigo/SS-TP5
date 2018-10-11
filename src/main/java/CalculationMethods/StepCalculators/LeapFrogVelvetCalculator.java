@@ -13,11 +13,12 @@ public class LeapFrogVelvetCalculator implements StepCalculator {
 
     private ForceCalculator forceCalculator;
     private Double deltaT;
-    CellGrid cellGrid = new CellGrid(1.5, 1.5, 0.25);
+    CellGrid cellGrid;
 
-    public LeapFrogVelvetCalculator(ForceCalculator forceCalculator, Double deltaT) {
+    public LeapFrogVelvetCalculator(ForceCalculator forceCalculator, Double deltaT, Double width, Double height, Double cellSize) {
         this.forceCalculator = forceCalculator;
         this.deltaT = deltaT;
+        cellGrid = new CellGrid(width, height, cellSize);
     }
 
     @Override

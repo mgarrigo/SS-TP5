@@ -68,7 +68,7 @@ public class SiloSimulator implements Callable {
 
 		ExperimentStatsHolder<SiloMetrics> holder = new ExperimentStatsHolder<>();
 		List<Wall> walls = getSiloWalls(openingRatio);
-		StepCalculator stepCalculator = new LeapFrogVelvetCalculator(new SiloForceCalculator(walls, width, height, cellSize), timeStep);
+		StepCalculator stepCalculator = new LeapFrogVelvetCalculator(new SiloForceCalculator(walls), timeStep, width, height, cellSize);
 
 		AnimationBuilder ab = new AnimationBuilder(walls);
         FileManager fm = new FileManager();
@@ -131,7 +131,7 @@ public class SiloSimulator implements Callable {
         List<Particle> particles = new ArrayList<>();
         Boolean finished = false;
         Double secondsToStabilice = .30;
-        StepCalculator stepCalculator = new LeapFrogVelvetCalculator(new SiloForceCalculator(getSiloWalls(openingRatio,true), width, height, cellSize), timeStep);
+        StepCalculator stepCalculator = new LeapFrogVelvetCalculator(new SiloForceCalculator(getSiloWalls(openingRatio,true)), timeStep, width, height, cellSize);
 	    while (! finished || currentTime < secondsToStabilice) {
             particles = stepCalculator.updateParticles(particles);
             if(currentTime - lastParticleSpawnedAt > timeBetweenParticles){

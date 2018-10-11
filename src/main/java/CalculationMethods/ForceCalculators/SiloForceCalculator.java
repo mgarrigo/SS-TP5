@@ -20,14 +20,12 @@ public class SiloForceCalculator implements ForceCalculator {
     private static double Kt = 2*Kn;
     private static double gamma = 100.0;
     private static double mu = 0.7;
-    private CellGrid cellGrid;
 
-    public SiloForceCalculator(List<Wall> walls, Double width, Double height, Double cellSize) {
+    public SiloForceCalculator(List<Wall> walls) {
         this.walls = walls;
         this.width = width;
         this.height = height;
         this.cellSize = cellSize;
-        this.cellGrid = new CellGrid(width, height, cellSize);
     }
 
     @Override
@@ -35,9 +33,6 @@ public class SiloForceCalculator implements ForceCalculator {
         GravityCalculator gravityCalculator = new GravityCalculator();
         GranularMaterialForce granularMaterialForce = new GranularMaterialForce();
 
-//        cellGrid.addParticles(particles);
-//        List<Particle> neighbors = cellGrid.getAdjacentParticles(p);
-//        cellGrid.clear();
         return gravityCalculator.calculateForce(p, particles)
                 .add(granularMaterialForce.calculateForce(p, particles))
                 .add(calculateForceWithWalls(p));
