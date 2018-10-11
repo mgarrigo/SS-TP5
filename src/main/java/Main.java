@@ -19,8 +19,8 @@ public class Main {
 	public static void main(String[] args) throws Exception {
 
 		Double width = 1.5; // m
-		Double height = 2.5; // m
-		Double cellSize = 0.25; // m
+		Double height = 1.5; // m
+		Double cellSize = 0.1; // m
 
 		Double minRadius = 0.02; // m
 		Double maxRadius = 0.02; // m
@@ -31,7 +31,7 @@ public class Main {
 		Double timeStep = 8E-5; // s
 		Integer totalAnimationFrames = timeLimit.intValue() * 60;
 
-		Integer maxParticles = 20;
+		Integer maxParticles = 100;
 		Integer particlesPerLine = 20;
 
 
@@ -43,7 +43,7 @@ public class Main {
 //		particles.add(new Particle(3, new Vector(-0.3, 1.0), new Vector(0.0, 0.0), new Vector(0.0, 1.0), 1.01, 0.02));
 
 		SiloSimulator siloSimulator = new SiloSimulator(width, height, cellSize, timeLimit, timeStep,
-				totalAnimationFrames, minRadius, maxRadius, mass, maxParticles,0.22, particles);
+				totalAnimationFrames, minRadius, maxRadius, mass, maxParticles,0.05, particles);
 
 		StringBuilder sb = ExperimentsStatsAgregator.getFromHolders(siloSimulator.call()).buildStatsOutput(Operation.MEAN);
 		System.out.println(sb.toString());

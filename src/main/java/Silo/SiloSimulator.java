@@ -1,10 +1,8 @@
 package Silo;
 
-import CalculationMethods.ForceCalculator;
 import CalculationMethods.ForceCalculators.SiloForceCalculator;
 import CalculationMethods.StepCalculator;
 import CalculationMethods.StepCalculators.LeapFrogVelvetCalculator;
-import CellIndexMethod.CellGrid;
 import experiments.ExperimentStatsHolder;
 import helpers.AnimationBuilder;
 import helpers.FileManager;
@@ -34,7 +32,9 @@ public class SiloSimulator implements Callable {
 	private Double mass;
 	private Integer maxParticles;
 	private List<Particle> particles;
-	private Double timeBetweenParticles = 0.05;
+	private Double timeBetweenParticles = 0.12;
+	private Double lastParticleSpawnedAt = 0.0;
+	Queue<Particle> waitingToReincarante = new ArrayDeque<>();
 
 	//This is the height of the funnel leading to the opening
 	private Double operingHeight;
@@ -54,7 +54,7 @@ public class SiloSimulator implements Callable {
 		this.mass = mass;
 		this.maxParticles = maxParticles;
 		this.openingRatio = openingRatio;
-		this.particles =  particles;//getParticlesToFillSilo(maxParticles);
+		this.particles =  getParticlesToFillSilo(maxParticles);
 	}
 
 
@@ -91,7 +91,16 @@ public class SiloSimulator implements Callable {
 			}
 
 
-            resetParticles();
+            killParticles();
+
+			if(currentTime - lastParticleSpawnedAt > timeBetweenParticles && !waitingToReincarante.isEmpty()){
+                lastParticleSpawnedAt = currentTime;
+                Particle revived = waitingToReincarante.poll();
+                revived = revived.getCopyWithVelocity(new Vector(0.0, 0.0))
+                        .getCopyWithPosition(new Vector((0.2+0.6*random.nextDouble())*width, height));
+                particles.add(revived);
+            }
+
 			currentTime += timeStep;
 		}
 
@@ -100,13 +109,12 @@ public class SiloSimulator implements Callable {
 		return holder;
 	}
 
-	private void resetParticles() {
+
+	private void killParticles() {
         for (int i = 0; i < particles.size(); i++) {
             Particle p = particles.get(i);
 	        if (p.getPosition().getY() < -height/10) {
-                particles.remove(i);
-                particles.add(p.getCopyWithPosition(new Vector(0.9*random.nextDouble()*width,(0.2*random.nextDouble()+0.8)*height))
-                        .getCopyWithVelocity(new Vector(0.0, 0.0)));
+                waitingToReincarante.add(particles.remove(i));
             }
         }
     }
@@ -142,7 +150,8 @@ public class SiloSimulator implements Callable {
                         System.out.println("Spawned all particles, waiting " + secondsToStabilice + " secs");
                     } else {
                         lastParticleSpawnedAt = currentTime;
-                        particles.add(new Particle(particles.size()+"a",new Vector(0.9*random.nextDouble()*width,height),maxRadius,mass));
+                        particles.addAll(linearSpawn(0.20*width, 0.8*width, 10, particles.size(), height));
+//                        particles.add(new Particle(particles.size()+"a",new Vector((0.2+0.5*random.nextDouble())*width,height),mass,maxRadius));
                         System.out.println("Spawnign particle: " + (particles.size() -1));
                     }
                 }
@@ -150,6 +159,18 @@ public class SiloSimulator implements Callable {
             currentTime += timeStep;
         }
         System.out.println("Finished stabilizing");
+        return particles;
+    }
+
+    public List<Particle> linearSpawn(Double start, Double end, Integer amount, int startingId, Double height){
+        List<Particle> particles = new ArrayList<>();
+        Integer id=startingId;
+        Random r = new Random();
+        for (Double i = start; i < end; i+=((end-start)/(amount*1.0))) {
+                particles.add(new Particle(id++, new Vector(i, height), new Vector(0.0, 0.0), new Vector(0.0, 0.0),
+                        0.01, r.nextDouble()*0.01 + 0.02));
+        }
+        System.out.println(particles.size() + " partículas\n");
         return particles;
     }
 
@@ -163,19 +184,19 @@ public class SiloSimulator implements Callable {
 		Double siloWidth = width;
 		Double siloWallHeight = height;
 		Double openingHeight = 0.2;
-		this.operingHeight = -(openingHeight+siloWallHeight)*siloScale;
+		this.operingHeight = -(openingHeight+siloWallHeight);
 		List<Wall> walls = new ArrayList<>();
 		//Left Wall
-		walls.add(new Wall(new Vector(0.0, siloWallHeight*siloScale), new Vector(0.0, openingHeight* siloWallHeight*siloScale)));
+		walls.add(new Wall(new Vector(0.0, siloWallHeight), new Vector(0.0, openingHeight* siloWallHeight)));
 		//Right Wall
-		walls.add(new Wall(new Vector(siloScale*siloWidth, openingHeight* siloWallHeight*siloScale), new Vector(siloScale*siloWidth, siloWallHeight*siloScale)));
+		walls.add(new Wall(new Vector(siloWidth, openingHeight* siloWallHeight), new Vector(siloWidth, siloWallHeight)));
 		//Right ramp
-		walls.add(new Wall(new Vector(((width+openingRatio)/2)*siloScale, 0.2),new Vector(siloScale*siloWidth, openingHeight* siloWallHeight*siloScale)));
+		walls.add(new Wall(new Vector(((width+openingRatio*width)/2), 0.2),new Vector(siloWidth, openingHeight* siloWallHeight)));
 		//Left Ramp
-		walls.add(new Wall(new Vector(0.0, openingHeight* siloWallHeight*siloScale),new Vector(((width-openingRatio)/2)*siloScale, 0.2)));
+		walls.add(new Wall(new Vector(0.0, openingHeight* siloWallHeight),new Vector(((width-openingRatio*width)/2), 0.2)));
         // Horizontal floor
         if(closed){
-//            walls.add(new Wall(new Vector(0.0, 0.5 * siloWallHeight*siloScale), new Vector(siloScale*siloWidth, 0.5 * siloWallHeight*siloScale)));
+            walls.add(new Wall(new Vector(0.0, 0.2), new Vector(siloWidth, 0.2)));
         }
         return walls;
 	}

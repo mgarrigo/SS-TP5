@@ -46,6 +46,9 @@ public class GranularMaterialForce implements ForceCalculator {
             }
 		}
 
+        if (FnSum.add(FtSum).norm() > 5000) {
+            System.out.println("boom!");
+        }
 		return FnSum.add(FtSum);
 	}
 
