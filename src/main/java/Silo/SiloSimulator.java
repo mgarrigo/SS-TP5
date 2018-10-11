@@ -42,7 +42,7 @@ public class SiloSimulator implements Callable {
 
 	public SiloSimulator(Double width, Double height, Double cellSize, Double timeLimit, Double timeStep,
                          Integer totalAnimationFrames, Double minRadius, Double maxRadius, Double mass,
-                         Integer maxParticles, Double openingRatio, List <Particle> particles) {
+                         Integer maxParticles, Double openingRatio) {
 		this.width = width;
 		this.height = height;
 		this.cellSize = cellSize;
@@ -54,7 +54,7 @@ public class SiloSimulator implements Callable {
 		this.mass = mass;
 		this.maxParticles = maxParticles;
 		this.openingRatio = openingRatio;
-		this.particles =  getParticlesToFillSilo(maxParticles);
+		this.particles = getParticlesToFillSilo(maxParticles);
 	}
 
 
