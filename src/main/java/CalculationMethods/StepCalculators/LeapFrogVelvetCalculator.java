@@ -24,7 +24,7 @@ public class LeapFrogVelvetCalculator implements StepCalculator {
     @Override
     public List<Particle> updateParticles(List<Particle> particles) {
 
-        cellGrid.clear();
+
         cellGrid.addParticles(particles);
         List<Particle> updatedParticles = particles.parallelStream().map(p -> {
             List<Particle> neighbors = cellGrid.getAdjacentParticles(p);
@@ -39,7 +39,7 @@ public class LeapFrogVelvetCalculator implements StepCalculator {
 
         cellGrid.clear();
         cellGrid.addParticles(updatedParticles);
-        return updatedParticles.stream().map(particle -> {
+        return updatedParticles.parallelStream().map(particle -> {
             List<Particle> neighbors = cellGrid.getAdjacentParticles(particle);
             Vector a = forceCalculator.calculateAcceleration(particle, neighbors);
             Vector velocity = particle.getVelocity().add(a.dot(deltaT / 2.0));

@@ -28,7 +28,7 @@ public class Main {
 		Double mass = 0.01; // kg
 
 		Double timeLimit = 5.0; // s
-		Double timeStep = 8E-5; // s
+		Double timeStep = 9E-5; // s
 		Integer totalAnimationFrames = timeLimit.intValue() * 60;
 
 		Integer maxParticles = 100;
