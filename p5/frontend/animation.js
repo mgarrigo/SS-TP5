@@ -19,7 +19,7 @@ function setup() {
 
     readWalls(file[0].trim());
     readFrames(frames);
-    console.log(walls);
+    console.log(particles);
 
     time_checkpoint = millis();
 }
@@ -41,8 +41,8 @@ readFrames = () => {
 getParticlesFromFrame = frame => {
     frame = frame.split(" ");
     particles = [];
-    for (let i = 0; i < frame.length; i += 2) {
-        particles.push({x: parseFloat(frame[i]), y: parseFloat(frame[i+1])}) // y axis inverted
+    for (let i = 0; i < frame.length; i += 3) {
+        particles.push({x: parseFloat(frame[i]), y: parseFloat(frame[i+1]), r: parseFloat(frame[i+2])})
     }
     return particles
 };
@@ -75,7 +75,7 @@ drawWalls = () => {
 drawParticle = particle => {
     var c = color(255, 0, 0);
     fill(c);
-    ellipse(canvas_size/4+world2canvas(particle.x), canvas_size-world2canvas(particle.y), world2canvas(0.02 * 2));
+    ellipse(canvas_size/4+world2canvas(particle.x), canvas_size-world2canvas(particle.y), world2canvas(particle.r * 2));
 };
 
 drawParticles = frame => {

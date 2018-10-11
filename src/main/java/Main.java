@@ -27,7 +27,7 @@ public class Main {
 
 		Double mass = 0.01; // kg
 
-		Double timeLimit = 2.0; // s
+		Double timeLimit = 3.0; // s
 		Double timeStep = 1E-4; // s
 		Integer totalAnimationFrames = timeLimit.intValue() * 60;
 
@@ -53,9 +53,11 @@ public class Main {
 	public static List<Particle> linearSpawn(Double start, Double end, Integer amount){
 		List<Particle> particles = new ArrayList<>();
 		Integer id=0;
+		Random r = new Random();
 		for (Double i = start; i < end; i+= ((end-start)/(amount*1.0))) {
 			for (Double j = 0.5; j <= 1.3; j+=0.1) {
-			particles.add(new Particle(id++, new Vector(i, j), new Vector(0.0, 0.0), new Vector(0.0, 1.0), 0.01, 0.02));
+			particles.add(new Particle(id++, new Vector(i, j), new Vector(0.0, 0.0), new Vector(0.0, 1.0),
+					0.01, r.nextDouble()*0.01 + 0.02));
 			}
 		}
 		System.out.println(particles.size() + " partículas\n");
