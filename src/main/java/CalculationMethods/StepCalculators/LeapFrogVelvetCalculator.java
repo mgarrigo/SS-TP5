@@ -24,7 +24,7 @@ public class LeapFrogVelvetCalculator implements StepCalculator {
     @Override
     public List<Particle> updateParticles(List<Particle> particles) {
 
-
+        cellGrid.clear();
         cellGrid.addParticles(particles);
         List<Particle> updatedParticles = particles.parallelStream().map(p -> {
             List<Particle> neighbors = cellGrid.getAdjacentParticles(p);
