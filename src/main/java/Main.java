@@ -31,12 +31,13 @@ public class Main {
 		Double timeStep = 9E-5; // s
 		Integer totalAnimationFrames = timeLimit.intValue() * 60;
 
-		Integer maxParticles = 1000;
+		Integer maxParticles = 400;
+		Integer particlesPerLine = 20;
 
 		Double opening = 0.15; // m
 
 		SiloSimulator siloSimulator = new SiloSimulator(width, height, cellSize, timeLimit, timeStep,
-				totalAnimationFrames, minRadius, maxRadius, mass, maxParticles,0.05);
+				totalAnimationFrames, minRadius, maxRadius, mass, maxParticles,0.8);
 
 		StringBuilder sb = ExperimentsStatsAgregator.getFromHolders(siloSimulator.call()).buildStatsOutput(Operation.MEAN);
 		System.out.println(sb.toString());

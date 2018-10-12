@@ -7,6 +7,7 @@ import CellIndexMethod.CellGrid;
 import experiments.ExperimentStatsHolder;
 import helpers.AnimationBuilder;
 import helpers.FileManager;
+import measurers.FlowMeasurer;
 import models.Particle;
 import models.Vector;
 import models.Wall;
@@ -34,12 +35,16 @@ public class SiloSimulator implements Callable {
 	private Integer maxParticles;
 	private List<Particle> particles;
 	private Double timeBetweenParticles = 0.12;
-	private Double lastParticleSpawnedAt = 0.0;
-	Queue<Particle> waitingToReincarante = new ArrayDeque<>();
+
+	private Double timeBetweenMeasures=0.1;
+	private Double lastMeasuredTime=0.0;
+	private Queue<Particle> waitingToReincarante = new ArrayDeque<>();
 
 	//This is the height of the funnel leading to the opening
 	private Double operingHeight;
 	private Double openingRatio;
+
+	private FlowMeasurer flowMeasurer = new FlowMeasurer();
 
 	public SiloSimulator(Double width, Double height, Double cellSize, Double timeLimit, Double timeStep,
                          Integer totalAnimationFrames, Double minRadius, Double maxRadius, Double mass,
@@ -72,28 +77,34 @@ public class SiloSimulator implements Callable {
 		StepCalculator stepCalculator = new LeapFrogVelvetCalculator(new SiloForceCalculator(walls), timeStep, width, height, cellSize);
 
 		AnimationBuilder ab = new AnimationBuilder(walls);
-        FileManager fm = new FileManager();
+		FileManager fm = new FileManager();
 
-        double currentTime = 0.0;
-        int animationCurrentFrame = 0;
+		double currentTime = 0.0;
+		int animationCurrentFrame = 0;
 
-		while(currentTime <= timeLimit) {
+		while (currentTime <= timeLimit) {
 			if (currentTime > timeLimit / totalAnimationFrames * animationCurrentFrame) {
 				ab.addParticlesforNextFrame(particles);
-                animationCurrentFrame++;
+				animationCurrentFrame++;
 			}
 
 			particles = stepCalculator.updateParticles(particles);
 
-			if(currentTime - lastMeasuredTime > deltaTime) {
-				holder.addDataPoint(SiloMetrics.FLOW,getFlowRate(currentTime,particles));
-				holder.addDataPoint(SiloMetrics.TIME,currentTime);
-                System.out.println("Time Simulated: " + currentTime);
+			if (currentTime - lastMeasuredTime > timeBetweenMeasures) {
+				holder.addDataPoint(SiloMetrics.TIME, currentTime);
+				holder.addDataPoint(SiloMetrics.KINETIC_ENERGY,getCineticEnergy(particles));
+				holder.addDataPoint(SiloMetrics.FLOW_BY_AMOUNT,flowMeasurer.getFlowByAmount());
+				holder.addDataPoint(SiloMetrics.FLOW_BY_AMOUNT_NORM,flowMeasurer.getFlowByAmountNorm());
+				holder.addDataPoint(SiloMetrics.FLOW_BY_TIME,flowMeasurer.getFlowByTime(currentTime));
+				System.out.println("Time Simulated: " + currentTime);
+				lastMeasuredTime = currentTime;
 			}
 
 			cellGrid.clear();
 			cellGrid.addParticles(particles);
-			particles.removeAll(cellGrid.getOutsideParticles(particles));
+			List<Particle> outsideParticles = cellGrid.getOutsideParticles(particles);
+			flowMeasurer.particlesFlowed(outsideParticles,currentTime);
+			particles.removeAll(outsideParticles);
 
 			if (particles.size() < maxParticles) {
 				Double radius = random.nextDouble() * (maxRadius - minRadius) + minRadius;
@@ -101,17 +112,6 @@ public class SiloSimulator implements Callable {
 				if (particle != null) particles.add(particle);
 //				System.out.println(particles.size());
 			}
-
-
-//            killParticles();
-//
-//			if(currentTime - lastParticleSpawnedAt > timeBetweenParticles && !waitingToReincarante.isEmpty()){
-//                lastParticleSpawnedAt = currentTime;
-//                Particle revived = waitingToReincarante.poll();
-//                revived = revived.getCopyWithVelocity(new Vector(0.0, 0.0))
-//                        .getCopyWithPosition(new Vector((0.2+0.6*random.nextDouble())*width, height));
-//                particles.add(revived);
-//            }
 
 			currentTime += timeStep;
 		}
@@ -121,53 +121,34 @@ public class SiloSimulator implements Callable {
 		return holder;
 	}
 
-
-	private void killParticles() {
-        for (int i = 0; i < particles.size(); i++) {
-            Particle p = particles.get(i);
-	        if (p.getPosition().getY() < -height/10) {
-                waitingToReincarante.add(particles.remove(i));
-            }
-        }
-    }
-
-	private Double deltaTime=1.0;
-	//If the fallen particles are removed, we need to substract the fallen from this value
-	private Integer lastParticles=0;
-	private Double lastMeasuredTime=0.0;
-
-	private Double getFlowRate(Double currentTime, List<Particle> particles){
-		Long escapedParticles = particles.stream().mapToDouble(p->p.getPosition().getY())
-				.filter(y -> y < operingHeight).count();
-		Double flow = (escapedParticles - lastParticles) / deltaTime;
-		lastParticles = escapedParticles.intValue();
-		lastMeasuredTime = currentTime;
-		return flow;
+	private Double getCineticEnergy(List<Particle> particles){
+		return 0.5*particles.stream().mapToDouble(p -> p.getMass()*Math.pow(p.getVelocity().norm(),2.0)).sum();
 	}
 
 	private List<Particle> getParticlesToFillSilo(Integer amount) {
         Double currentTime=0.0;
-        Double lastParticleSpawnedAt = 0.0;
         List<Particle> particles = new ArrayList<>();
         Boolean finished = false;
         Double secondsToStabilice = .30;
-        StepCalculator stepCalculator = new LeapFrogVelvetCalculator(new SiloForceCalculator(getSiloWalls(openingRatio,true)), timeStep, width, height, cellSize);
+		CellGrid cellGrid = new CellGrid(width, height, cellSize);
+		Integer id=0;
+		Random r = new Random();
+		StepCalculator stepCalculator = new LeapFrogVelvetCalculator(new SiloForceCalculator(getSiloWalls(openingRatio,true)), timeStep, width, height, cellSize);
 	    while (! finished || currentTime < secondsToStabilice) {
             particles = stepCalculator.updateParticles(particles);
-            if(currentTime - lastParticleSpawnedAt > timeBetweenParticles){
-                if(!finished){
-                    if(particles.size() >= amount ){
-                        finished = true;
-                        currentTime = 0.0;
-                        System.out.println("Spawned all particles, waiting " + secondsToStabilice + " secs");
-                    } else {
-                        lastParticleSpawnedAt = currentTime;
-                        particles.addAll(linearSpawn(0.20*width, 0.8*width, 10, particles.size(), height));
-//                        particles.add(new Particle(particles.size()+"a",new Vector((0.2+0.5*random.nextDouble())*width,height),mass,maxRadius));
-                        System.out.println("Spawnign particle: " + (particles.size() -1));
-                    }
-                }
-            }
+			if(!finished){
+				if(particles.size() >= amount ){
+					finished = true;
+					currentTime = 0.0;
+					System.out.println("Spawned all particles, waiting " + secondsToStabilice + " secs");
+				} else {
+					Particle particle = ParticleSpawner.spawnParticleOnTop(cellGrid, id++, r.nextDouble()*(maxRadius-minRadius) + minRadius, mass);
+					if (particle != null){
+						particles.add(particle);
+						System.out.println("Spawning particle: " + (particles.size() -1));
+					}
+				}
+			}
             currentTime += timeStep;
         }
         System.out.println("Finished stabilizing");
@@ -179,8 +160,8 @@ public class SiloSimulator implements Callable {
         Integer id=startingId;
         Random r = new Random();
         for (Double i = start; i < end; i+=((end-start)/(amount*1.0))) {
-                particles.add(new Particle(id++, new Vector(i, height), new Vector(0.0, 0.0), new Vector(0.0, 0.0),
-                        0.01, r.nextDouble()*0.01 + 0.02));
+                particles.add(new Particle(id+++"", new Vector(i, height),
+                        mass, r.nextDouble()*(maxRadius-minRadius) + minRadius));
         }
         System.out.println(particles.size() + " partículas\n");
         return particles;
@@ -192,7 +173,6 @@ public class SiloSimulator implements Callable {
     }
 
 	private List<Wall> getSiloWalls(Double openingRatio, Boolean closed){
-		Double siloScale = 1.0;
 		Double siloWidth = width;
 		Double siloWallHeight = height;
 		Double openingHeight = 0.2;
