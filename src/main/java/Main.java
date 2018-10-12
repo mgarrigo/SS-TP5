@@ -27,17 +27,17 @@ public class Main {
 
 		Double mass = 0.01; // kg
 
-		Double timeLimit = 5.0; // s
+		Double timeLimit = 10.0; // s
 		Double timeStep = 9E-5; // s
 		Integer totalAnimationFrames = timeLimit.intValue() * 60;
 
-		Integer maxParticles = 400;
+		Integer maxParticles = 1000;
 		Integer particlesPerLine = 20;
 
 		Double opening = 0.15; // m
 
 		SiloSimulator siloSimulator = new SiloSimulator(width, height, cellSize, timeLimit, timeStep,
-				totalAnimationFrames, minRadius, maxRadius, mass, maxParticles,0.8);
+				totalAnimationFrames, minRadius, maxRadius, mass, maxParticles,opening/width);
 
 		StringBuilder sb = ExperimentsStatsAgregator.getFromHolders(siloSimulator.call()).buildStatsOutput(Operation.MEAN);
 		System.out.println(sb.toString());

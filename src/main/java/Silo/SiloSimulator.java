@@ -175,17 +175,17 @@ public class SiloSimulator implements Callable {
 	private List<Wall> getSiloWalls(Double openingRatio, Boolean closed){
 		Double siloWidth = width;
 		Double siloWallHeight = height;
-		Double openingHeight = 0.2;
+		Double openingHeight = 0.0;
 		this.operingHeight = -(openingHeight+siloWallHeight);
 		List<Wall> walls = new ArrayList<>();
 		//Left Wall
-		walls.add(new Wall(new Vector(0.0, siloWallHeight), new Vector(0.0, openingHeight* siloWallHeight)));
+		walls.add(new Wall(new Vector(0.0, siloWallHeight), new Vector(0.0, openingHeight* (siloWallHeight-0.2) + 0.2)));
 		//Right Wall
-		walls.add(new Wall(new Vector(siloWidth, openingHeight* siloWallHeight), new Vector(siloWidth, siloWallHeight)));
+		walls.add(new Wall(new Vector(siloWidth, openingHeight* (siloWallHeight-0.2) + 0.2), new Vector(siloWidth, siloWallHeight)));
 		//Right ramp
-		walls.add(new Wall(new Vector(((width+openingRatio*width)/2), 0.2),new Vector(siloWidth, openingHeight* siloWallHeight)));
+		walls.add(new Wall(new Vector(((width+openingRatio*width)/2), 0.2),new Vector(siloWidth, openingHeight* (siloWallHeight-0.2) + 0.2)));
 		//Left Ramp
-		walls.add(new Wall(new Vector(0.0, openingHeight* siloWallHeight),new Vector(((width-openingRatio*width)/2), 0.2)));
+		walls.add(new Wall(new Vector(0.0, openingHeight* (siloWallHeight-0.2) + 0.2),new Vector(((width-openingRatio*width)/2), 0.2)));
         // Horizontal floor
         if(closed){
             walls.add(new Wall(new Vector(0.0, 0.2), new Vector(siloWidth, 0.2)));
