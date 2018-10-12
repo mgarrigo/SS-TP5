@@ -13,9 +13,6 @@ import java.util.List;
 
 public class SiloForceCalculator implements ForceCalculator {
     private List<Wall> walls;
-    private Double width;
-    private Double height;
-    private Double cellSize;
     private static double Kn = 1E5; // 10^5 N/m
     private static double Kt = 2*Kn;
     private static double gamma = 100.0;
@@ -23,19 +20,13 @@ public class SiloForceCalculator implements ForceCalculator {
 
     public SiloForceCalculator(List<Wall> walls) {
         this.walls = walls;
-        this.width = width;
-        this.height = height;
-        this.cellSize = cellSize;
     }
 
     @Override
     public Vector calculateForce(Particle p, Collection<Particle> particles) {
-        GravityCalculator gravityCalculator = new GravityCalculator();
         GranularMaterialForce granularMaterialForce = new GranularMaterialForce();
 
-        return gravityCalculator.calculateForce(p, particles)
-                .add(granularMaterialForce.calculateForce(p, particles))
-                .add(calculateForceWithWalls(p));
+        return calculateForceWithWalls(p);
     }
 
     public Vector calculateForceWithWalls(Particle p) {

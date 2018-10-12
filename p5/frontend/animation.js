@@ -6,6 +6,8 @@ var frames_state = [];
 var canvas_size = 800;
 var world_size = 4;
 var walls = [];
+var max_pressure = 30;
+var min_pressure = 0;
 
 
 function preload() {
@@ -19,7 +21,7 @@ function setup() {
 
     readWalls(file[0].trim());
     readFrames(frames);
-    console.log(particles);
+    console.log(max_pressure);
 
     time_checkpoint = millis();
 }
@@ -41,8 +43,12 @@ readFrames = () => {
 getParticlesFromFrame = frame => {
     frame = frame.split(" ");
     particles = [];
-    for (let i = 0; i < frame.length; i += 3) {
-        particles.push({x: parseFloat(frame[i]), y: parseFloat(frame[i+1]), r: parseFloat(frame[i+2])})
+    for (let i = 0; i < frame.length; i += 4) {
+        particles.push({x: parseFloat(frame[i]),
+            y: parseFloat(frame[i+1]),
+            r: parseFloat(frame[i+2]),
+            pressure: parseFloat(frame[i+3]),
+        });
     }
     return particles
 };
@@ -73,7 +79,8 @@ drawWalls = () => {
 };
 
 drawParticle = particle => {
-    var c = color(255, 0, 0);
+    var transformed_pressure = max(min((particle.pressure-min_pressure)/(max_pressure-min_pressure) * 255, 255), 0);
+    var c = color(255, 255 - transformed_pressure, 255 - transformed_pressure);
     fill(c);
     ellipse(canvas_size/4+world2canvas(particle.x), canvas_size-world2canvas(particle.y), world2canvas(particle.r * 2));
 };
