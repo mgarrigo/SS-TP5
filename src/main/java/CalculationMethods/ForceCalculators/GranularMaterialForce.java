@@ -14,6 +14,7 @@ public class GranularMaterialForce implements ForceCalculator {
 	private static double Kn = 1E5; // 10^5 N/m
     private static double Kt = 2*Kn;
     private static double gamma = 100.0;
+    private static double mu = 0.9;
 
 	@Override
 	public Vector calculateForce(Particle p, Collection<Particle> particles) {
@@ -40,7 +41,7 @@ public class GranularMaterialForce implements ForceCalculator {
 
                 //TODO: esto no se si va asi, o al reves
                 Vector rrel = p.getVelocity().subtract(particle.getVelocity());
-                Vector Ft = tangentialVersor.dot(-Kt * xi * rrel.dot(tangentialVersor)); // -kt * ξ * [rrel x tversor] (versor tangencial)
+                Vector Ft = tangentialVersor.dot(-mu * Kt * xi * rrel.dot(tangentialVersor)); // -kt * ξ * [rrel x tversor] (versor tangencial)
 
                 FtSum = FtSum.add(Ft);
             }

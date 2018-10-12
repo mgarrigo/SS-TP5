@@ -10,6 +10,7 @@ public class Particle {
     private Vector acceleration;
     private Double mass;
     private Double radius;
+    private Double pressure = 0.0;
 
     public Particle(Integer id, Vector position, Vector velocity, Vector acceleration, Double mass, Double radius) {
         this(id.toString(),position,velocity,acceleration,mass, radius);
@@ -31,6 +32,16 @@ public class Particle {
 
     public Particle getCopyWithPosition(Vector newPosition) {
         return new Particle(id, newPosition, velocity, acceleration, mass, radius);
+    }
+
+    public Particle getCopyWithPressure(Double pressure) {
+        Particle newPart =  new Particle(id, position, velocity, acceleration, mass, radius);
+        newPart.pressure = pressure;
+        return newPart;
+    }
+
+    public Double getPressure() {
+        return pressure;
     }
 
     public Vector getPosition() {
