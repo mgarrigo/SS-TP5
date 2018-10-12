@@ -3,6 +3,7 @@ package Silo;
 import CalculationMethods.ForceCalculators.SiloForceCalculator;
 import CalculationMethods.StepCalculator;
 import CalculationMethods.StepCalculators.LeapFrogVelvetCalculator;
+import CellIndexMethod.CellGrid;
 import experiments.ExperimentStatsHolder;
 import helpers.AnimationBuilder;
 import helpers.FileManager;
@@ -54,7 +55,7 @@ public class SiloSimulator implements Callable {
 		this.mass = mass;
 		this.maxParticles = maxParticles;
 		this.openingRatio = openingRatio;
-		this.particles = getParticlesToFillSilo(maxParticles);
+		this.particles = new ArrayList<>();
 	}
 
 
@@ -63,8 +64,8 @@ public class SiloSimulator implements Callable {
 	public ExperimentStatsHolder<SiloMetrics> call() throws Exception {
 
 //		List<Particle> particles = new LinkedList<>();
-//		CellGrid cellGrid = new CellGrid(width, height + cellSize, cellSize);
-//		Integer id = 0;
+		CellGrid cellGrid = new CellGrid(width, height, cellSize);
+		Integer id = 0;
 
 		ExperimentStatsHolder<SiloMetrics> holder = new ExperimentStatsHolder<>();
 		List<Wall> walls = getSiloWalls(openingRatio);
@@ -90,16 +91,27 @@ public class SiloSimulator implements Callable {
                 System.out.println("Time Simulated: " + currentTime);
 			}
 
+			cellGrid.clear();
+			cellGrid.addParticles(particles);
+			particles.removeAll(cellGrid.getOutsideParticles(particles));
 
-            killParticles();
+			if (particles.size() < maxParticles) {
+				Double radius = random.nextDouble() * (maxRadius - minRadius) + minRadius;
+				Particle particle = ParticleSpawner.spawnParticleOnTop(cellGrid, id++, radius, mass);
+				if (particle != null) particles.add(particle);
+//				System.out.println(particles.size());
+			}
 
-			if(currentTime - lastParticleSpawnedAt > timeBetweenParticles && !waitingToReincarante.isEmpty()){
-                lastParticleSpawnedAt = currentTime;
-                Particle revived = waitingToReincarante.poll();
-                revived = revived.getCopyWithVelocity(new Vector(0.0, 0.0))
-                        .getCopyWithPosition(new Vector((0.2+0.6*random.nextDouble())*width, height));
-                particles.add(revived);
-            }
+
+//            killParticles();
+//
+//			if(currentTime - lastParticleSpawnedAt > timeBetweenParticles && !waitingToReincarante.isEmpty()){
+//                lastParticleSpawnedAt = currentTime;
+//                Particle revived = waitingToReincarante.poll();
+//                revived = revived.getCopyWithVelocity(new Vector(0.0, 0.0))
+//                        .getCopyWithPosition(new Vector((0.2+0.6*random.nextDouble())*width, height));
+//                particles.add(revived);
+//            }
 
 			currentTime += timeStep;
 		}

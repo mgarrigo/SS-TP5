@@ -9,7 +9,7 @@ import java.util.Random;
 
 public class ParticleSpawner {
 
-	public static Integer SPAWN_ATTEMPTS = 100;
+	public static Integer SPAWN_ATTEMPTS = 1000;
 
 	public static Particle spawnParticleOnTop(CellGrid cellGrid, Integer id, Double radius, Double mass) {
 
@@ -17,9 +17,9 @@ public class ParticleSpawner {
 
 		int attempt = 0;
 
-		while(attempt-- < SPAWN_ATTEMPTS) {
+		while(attempt++ < SPAWN_ATTEMPTS) {
 			x = SiloSimulator.random.nextDouble() * (cellGrid.getWidth() - radius * 2) + radius;
-			Particle particle = new Particle(id, new Vector(x, 0.0), new Vector(), new Vector(), mass, radius);
+			Particle particle = new Particle(id, new Vector(x, cellGrid.getHeight()), new Vector(), new Vector(), mass, radius);
 			List<Particle> adjacent = cellGrid.getAdjacentParticles(particle);
 
 			Boolean conflictFound = false;

@@ -4,7 +4,7 @@ var time_checkpoint;
 var frames;
 var frames_state = [];
 var canvas_size = 800;
-var world_size = 4;
+var world_size = 3;
 var walls = [];
 
 

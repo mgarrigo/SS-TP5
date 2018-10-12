@@ -5,6 +5,7 @@ import models.Particle;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.lang.System.exit;
 
@@ -20,7 +21,9 @@ public class CellGrid {
 
 	public CellGrid(Double width, Double height, Double cellSize) throws IllegalArgumentException {
 
-		if (width / cellSize % 1 != 0 || height / cellSize % 1 != 0) {
+		Double delta = 0.00001;
+
+		if (Math.abs(width / cellSize) % 1 > delta || Math.abs(height / cellSize) % 1 > delta) {
 			throw new IllegalArgumentException("Width or Height not multiple of cellSize");
 		}
 
@@ -90,12 +93,11 @@ public class CellGrid {
 		particles.stream().forEach(p -> addParticle(p));
 	}
 
-	public List<Particle> getFallenParticles() {
-		List<Particle> fallen = new LinkedList<>();
-		for (int col = 0; col < cols; col++) {
-			fallen.addAll(cells[rows-1][col].getParticles());
-		}
-		return fallen;
+	public List<Particle> getOutsideParticles(Collection<Particle> particles) {
+
+		return particles.parallelStream().filter(particle -> particle.getPosition().getX() < 0.0 ||
+				particle.getPosition().getX() > width || particle.getPosition().getY() < 0.0 ||
+				particle.getPosition().getY() > height).collect(Collectors.toList());
 	}
 
 }

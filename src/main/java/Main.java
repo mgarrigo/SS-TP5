@@ -22,8 +22,8 @@ public class Main {
 		Double height = 1.5; // m
 		Double cellSize = 0.06; // m
 
-		Double minRadius = 0.02; // m
-		Double maxRadius = 0.02; // m
+		Double minRadius = 0.01; // m
+		Double maxRadius = 0.015; // m
 
 		Double mass = 0.01; // kg
 
@@ -31,7 +31,7 @@ public class Main {
 		Double timeStep = 9E-5; // s
 		Integer totalAnimationFrames = timeLimit.intValue() * 60;
 
-		Integer maxParticles = 100;
+		Integer maxParticles = 1000;
 		Integer particlesPerLine = 20;
 
 //		particles.add(new Particle(0, new Vector(0.0, 0.0), new Vector(0.80, 2.0), new Vector(0.0, 1.0), 1.01, 0.02));
