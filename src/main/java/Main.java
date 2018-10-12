@@ -36,7 +36,7 @@ public class Main {
 		Double opening = 0.15; // m
 
 		SiloSimulator siloSimulator = new SiloSimulator(width, height, cellSize, timeLimit, timeStep,
-				totalAnimationFrames, minRadius, maxRadius, mass, maxParticles,opening/width);
+				totalAnimationFrames, minRadius, maxRadius, mass, maxParticles,0.05);
 
 		StringBuilder sb = ExperimentsStatsAgregator.getFromHolders(siloSimulator.call()).buildStatsOutput(Operation.MEAN);
 		System.out.println(sb.toString());
